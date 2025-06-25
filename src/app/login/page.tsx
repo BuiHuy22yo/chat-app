@@ -1,9 +1,8 @@
 "use client";
 import { auth } from "@/lib/firebase";
-import { log } from "console";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -11,6 +10,18 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isRegister, setIsRegister] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.replace("/"); // Nếu đã đăng nhập, chuyển về trang chủ
+      } else {
+        setCheckingAuth(false);
+      }
+    });
+    return () => unsubscribe();
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,14 +32,17 @@ export default function LoginPage() {
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
-      router.push("/");
+      // Đăng nhập/đăng ký thành công, router.replace('/') sẽ được trigger bởi onAuthStateChanged
     } catch (error: any) {
-      console.log(error);
       alert((isRegister ? "Đăng ký" : "Đăng nhập") + " thất bại: " + error.message);
     } finally {
       setLoading(false);
     }
   };
+
+  if (checkingAuth) {
+    return <div>Đang kiểm tra...</div>;
+  }
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
