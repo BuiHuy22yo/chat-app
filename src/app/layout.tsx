@@ -26,19 +26,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#f3f2f5]`}
+        className=''
       >
-        {/* Search bar toàn cục ở trên cùng */}
-        <div className="w-full bg-[#ededf0] px-0 py-4 flex items-center justify-center sticky top-0 z-50">
-          <div className="w-full max-w-2xl flex items-center bg-white rounded-xl shadow px-4 py-2 border border-gray-200">
-            <FiSearch className="text-gray-400 mr-2" size={20} />
-            <input
-              type="text"
-              placeholder="Search"
-              className="flex-1 bg-transparent outline-none text-base"
-            />
-          </div>
-        </div>
         {children}
       </body>
     </html>
